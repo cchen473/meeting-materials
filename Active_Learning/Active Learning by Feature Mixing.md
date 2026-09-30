@@ -44,7 +44,7 @@ $$
 $$\mathcal{I}=\left\{\boldsymbol{z}^u\in\boldsymbol{Z}^u|\exists\boldsymbol{z}^\star\in\boldsymbol{Z}^\star,f_c^*(\tilde{\boldsymbol{z}}_{\boldsymbol{\alpha}})\neq y_{\boldsymbol{z}^u}^*\right\}$$
 然后我们需要在这个候选集上面去做B簇k-means，去选多样、有代表性的样本。
 那么文章也做了Observation，相比其他的AL算法，他可以选到更多决策边界的样本：
-![alfamixobs.png](Figs/alfamixobs.png)
+![[alfamixobs.png]]
 那么整个方法的伪代码一张图就可以说清：
-![ALFAMIXalg.png](Figs/ALFAMIXalg.png)
+![[ALFAMIXalg.png]]
 

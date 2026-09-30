@@ -30,7 +30,7 @@ $$(g_x)_i=\frac{\partial}{\partial W_i}\ell_\mathrm{CE}(f(x;\theta),\hat{y})=(p_
 
 #### 怎么筛选样本
 算法流程图：
-![BADGE 算法流程图](Figs/Badge_algorithm.png)
+![[Badge_algorithm.png]]
 
 中文解释一下：
 1. 算法的输入是：神经网络、一个待筛选的样本池、M个预先随机好的样本、当前的标注轮数T和一个batch内的样本数B
@@ -57,7 +57,7 @@ $$\|g_x^y\|^2=\left(\sum_{i=1}^Kp_i^2+1-2p_y\right)\|z(x;V)\|^2$$
 所以证明了我们做法的合理性。
 3. 在gradient embedding上面做*k*-MEANS++: 如果一个batch你只选gradient embedding长的，势必会引来问题，就是指导信号是一致的，比如一个是(10,5,0)，另一个是(2,1,0)，这方向是一致的，你在第一个上面做个梯度下降，这个参数被优化的差不多了，另一个也就较为确定了，相当于白选了。所以说另外一个选样本的指标，多样性(Diversity)很重要，要对这个做个*k*-MEANS++。
 4. 使用*k*-MEANS++而不是*k*-DPP: 先讲一下*k*-DPP算法，就是说对每一个gradient embedding都与其他的gradient embedding算一次Gram行列式，这个行列式越大，被选中的概率也越大，但是这种方法时间复杂度很高，如图所示：
-![sample.png](Figs/sample.png)
+![[sample.png]]
 其实这两个方法在sample能力上差不多，但是*k*-DPP时间复杂度明显高。
 
 #### 可能遇到的问题（这个方法在哪些环境下可能不work）

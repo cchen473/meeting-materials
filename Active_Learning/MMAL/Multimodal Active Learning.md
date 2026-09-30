@@ -1,7 +1,7 @@
 
 #### 课题简介
 
-![Pool-AL.png](../Figs/Pool-AL.png)
+![[Pool-AL.png]]
 
 
 #### IDEA

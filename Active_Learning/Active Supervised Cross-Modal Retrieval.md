@@ -17,12 +17,12 @@ $$\begin{aligned}\mathcal{L}_{\mathrm{con}}&=\mathcal{L}_{\mathrm{info}}\left(\b
 $$\mathcal{L}_{\mathrm{cls}}=\frac{1}{n}\sum_{i=1}^n\|\hat{\boldsymbol{y}}_i^v-\boldsymbol{y}_i\|_2+\frac{1}{n}\sum_{i=1}^n\|\hat{\boldsymbol{y}}_i^t-\boldsymbol{y}_i\|_2$$
 也就是在两个模态学出来的特征上做一个分类，然后用标注的标签去监督这个分类损失，注意是平方损失而不是CE损失。
 2. 那么如果说直接把Active Learning的方法迁移过来又有什么问题呢？
-![CMRp1.png](Figs/CMRp1.png)
+![[CMRp1.png]]
 可以看上面这张图，对于上面这个样本的这个图像，在图像的特征空间中，他和Teddy bear、Shoe、Dog的特征相似度都不太高，但是在共享的特征空间上，图文的相似度是近的，说明这个样本的跨模态关系我们已经很好的master到了，但是还做不好分类，那么这种uncertainty，我们的现有AL算法是能捕捉到的；
 但是下面这张图（注意这个Sheets应该是Sheeps），在图像的特征空间中，这个图像和一些主要的类别都能match上，但是在共享特征空间上，他并不能和他对应的文本学到很好的跨模态匹配关系，我们现在也没有一个很好的AL算法去量化“跨模态不确定性”这个目标。
 所以说我们要提出一个选样本方法去量化以上两个指标。
 ## Methods
-![CMRp2.png](Figs/CMRp2.png)
+![[CMRp2.png]]
 这个图意思是我们除了要训一个Task Model，还要去训一个选样模型，也就是这个Unbiased Data Selection Algorithm，去满足我上面的要求，那么这个算法呢分两个module，也就是基于概率的多模态信息度量和密度感知的选样。
 ### Probabilistic Multi-Modal Informativeness Measurement
 ##### 为什么叫做Probabilistic Measurement？
@@ -60,7 +60,7 @@ $$\mathrm{I}_{(x_i^v,x_i^t)}=\alpha\left(\left\|\Sigma_v^i\right\|_2+\left\|\Sig
 这个没什么可说的，如果单模态不确定，或者跨模态不确定，我们都有更大概率去选他。
 ### Density-Aware Budget Allocation
 现在我们需要进行密度感知以进行无偏的挑选，不然就会出现这种类别不平衡的情况：
-![biasCMR.png](Figs/biasCMR.png)
+![[biasCMR.png]]
 首先这个密度感知的这个事情是在融合空间上做的，所以先融合：$\boldsymbol{\mu}_z^i=\boldsymbol{\mu}_v^i+\boldsymbol{\mu}_t^i$ , $\boldsymbol{\Sigma}_z^i=\boldsymbol{\Sigma}_v^i+\boldsymbol{\Sigma}_t^i.$ 
 之后就要做密度感知了，那么一个Batch内，密度这样定义：
 $$\begin{aligned}A_{\mathcal{S}}=\frac{1}{N^s\cdot(N^s-1)}\sum_{i=1}^{N^s}\sum_{j\neq i}^{N^s}p\left(m|d_{z_i},d_{z_j}\right)\end{aligned}$$
@@ -69,11 +69,11 @@ $\boldsymbol{N}^{s}$是Batch的样本个数
 $$\begin{aligned}\max_{q\in\Delta_b}&\mathbb{E}_{\boldsymbol{S}\sim q}\left[\sum_{i\in\boldsymbol{S}}\mathbb{I}_i-A_{\boldsymbol{S}}+\lambda\right],\\&\mathrm{where~}\Delta_b=\left\{q\in[0,1]^{|N_u|}:\sum_{i\in|N_u|}q_i=b\right\}\end{aligned}$$
 就是要去最大化这个文章的信息量-密度，但是这个$\lambda$其实没用，文章在胡讲，代码里面也没有这个的体现，所以这里先存疑吧，做法也比较存疑，因为第二个这个密度项应该是有了batch再算的，但是有了batch再优化这个吗，那搜索数量是不是太大了？（伪代码里面也没有写）
 ## Experiments
-![CMREXP.png](Figs/CMREXP.png)
+![[CMREXP.png]]
 依旧SOTA，其中注意，标注对这个任务影响不大，因为不影响图文之间align的loss，只是标注loss的影响，但是这个还是效果很好。
-![CMRMAP.png](Figs/CMRMAP.png)截取的一些表，不同数据集的MAP，效果不错
-![CMRchange.png](Figs/CMRchange.png)不管是什么CMR的方法，这个都即插即用，work的不错
-![CMRabl.png](Figs/CMRabl.png)消融，nothing to say
+![[CMRMAP.png]]截取的一些表，不同数据集的MAP，效果不错
+![[CMRchange.png]]不管是什么CMR的方法，这个都即插即用，work的不错
+![[CMRabl.png]]消融，nothing to say
 ## Takeaway
 1. 一种量化跨模态关系的方法，我觉得可以用到分类问题中
 2. 概率特征建模去量化不确定性的方法

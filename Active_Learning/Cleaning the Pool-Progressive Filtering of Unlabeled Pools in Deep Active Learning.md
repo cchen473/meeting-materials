@@ -5,7 +5,7 @@
 #### 集成式主动学习
 传统主动学习策略会出现一些问题，特别是硬规则启发式的策略，固定一个选样规则难以建模现在的模型认知，所以我们一般是这样做的，我们同时运行多个主动学习策略，然后我们去选择性采纳他们各自的意见，然后达成一个最终的选样结果，这个idea是和[AutoAL: Automated Active Learning with Differentiable Query Strategy Search](https://arxiv.org/abs/2208.07734) *(笔记未写完)*类似的，那么他属于是重新训了一个模型，用了一点meta-learning的内容，但是我们是采用了一个逐步分层筛选的一个过程，整个这个选样的过程没怎么用到深度学习相关内容，所以也比较省计算，而且效果很好。
 ## Method
-这个方法真的很简洁，一个伪代码就解决了，说完之后就讲其他的分析去了。![Progressive-Filtering.png](Figs/Progressive-Filtering.png)
+这个方法真的很简洁，一个伪代码就解决了，说完之后就讲其他的分析去了。![[Progressive-Filtering.png]]
 这个Progressive Filtering算法其实很简单的
 我们有一个未标注的集合$\mathcal{U}_t$，一个包含很多启发式主动学习算法的集合$\mathcal{S}=\{s_1,\ldots,s_M\}$，然后我们做$R$轮的过滤，然后我们设计一个采样超参$\alpha$，然后就可以运行这个算法了。
 定义$\mathcal{C}_0\leftarrow\mathcal{U}_t$，也就是这个初始的大池子是整个未标注集合。

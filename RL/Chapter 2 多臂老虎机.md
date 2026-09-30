@@ -19,10 +19,10 @@
 2. 我们这里计算Q值采用第一种实现，也就是直接平均式实现，即$$Q_{t}(a)\overset{.}{=}\frac{t\text{ 时刻前通过执行动作 }a\text{ 得到的收益总和}}{t\text{ 时刻前执行动作 }a\text{ 的次数}}=\frac{\sum_{i=1}^{t-1}R_{i}\cdot\mathbb{1}_{A_{i}=a}}{\sum_{i=1}^{t-1}\mathbb{1}_{A_{i}=a}}$$
 3. 那么我们这个$\epsilon$设置为3个值，0, 0.01和0.1，以表达不同的探索性。那么我们对每一个臂其实会有一个初始的估计，目前我们采用全0实现。
 4. 实验结果：
-![C2F1.png](Figs/C2F1.png)
+![[C2F1.png]]
 这两个都是在0.1下面做的，左边意味着我们最后的奖励到后面越来越逼近期望的最优奖励，也就是最好的那个臂的期望奖励（其实有点看不太出来），那么右边这个图红色就是我们对每个臂期望奖励的估计，灰色的是真实的$q_{*}(a)$说明我们基本上学到了这个每个臂的期望奖励。
-![C2F2.png](Figs/C2F2.png)那么这个图是在不同超参下面，我们的平均奖励，我们做了2k次实验，每一次实验做1k步，那么$\epsilon$非零的情况下呢，其实我们的平均收益都在上升，那么如果我们纯贪心那就有问题了，纯贪心的话我们找到一个我们估计比0大的臂就一直拉它，那探索性就没了。
-右边其实就是我们做2k次实验，这些实验里在每一步中，选择最优动作的比例了。![C2F3.png](Figs/C2F3.png)
+![[C2F2.png]]那么这个图是在不同超参下面，我们的平均奖励，我们做了2k次实验，每一次实验做1k步，那么$\epsilon$非零的情况下呢，其实我们的平均收益都在上升，那么如果我们纯贪心那就有问题了，纯贪心的话我们找到一个我们估计比0大的臂就一直拉它，那探索性就没了。
+右边其实就是我们做2k次实验，这些实验里在每一步中，选择最优动作的比例了。![[C2F3.png]]
 最后一个图都是在纯贪心的场景下做的，就是三个东西
 最上面呢，就是说如果我们初始认为每个臂的初始期望奖励是5，也就是很大的数，那我们用纯贪心的方法，就会发现每拉动一次，对应那个臂的期望奖励就会降低，那我们就换没拉过的去拉，直到我们优化多次后找到降低最少的那个杆去一直选他，这样的探索性会强。
 中间呢其实就是我们初始认为每个臂的期望奖励都是0，那么我们很容易找到提升的臂，那么这个时候我们就会一直拉它了，那么探索性相比乐观的$Q_0$就会弱很多。
@@ -48,7 +48,7 @@ $$\Pr\{A_t=a\}\doteq\frac{e^{H_t(a)}}{\sum_{b=1}^ke^{H_t(b)}}\doteq\pi_t(a)$$就
 那么我们不需要更新我们对动作价值的估计，而是我们直接去更新这个策略向量，我们这样做：$$\begin{aligned}&H_{t+1}(A_t)\doteq H_t(A_t)+\alpha\left(R_t-\bar{R}_t\right)\left(1-\pi_t(A_t)\right),&&\text{以及}\\&H_{t+1}(a)\doteq H_t(a)-\alpha\left(R_t-\bar{R}_t\right)\pi_t(a),&&\text{对所有 }a\neq A_t,\end{aligned}$$其中$\bar{R}_t\in\mathbb{R}$是在$t$时刻之前的奖励均值，那么这个式子我们直观理解一下，就是说如果我们这一步获得的奖励大于之前的奖励均值，说明我们这一次的动作选择是好的，我们应该增大他的偏好分数，减小其他动作的分数，这很直观；反之我们该减小这个动作，增大别的动作，可以往进去代一下看看这个分数的变化。
 那么值钱其实是Q-learning，那么这次我们就是$\pi$-learning了，这就是区别。
 那么书上还做了一个实验，是这样的：
-我们在多臂老虎机中，把这几个臂的真值回报期望变成从$N(4,1)$中抽样出来的，然后设置了两个不同的$\alpha$值，分别为0.1和0.4，此外，将动作偏好的更新的公式中的$-\bar{R}_t$尝试去掉，最后的结果是这样：![C2F4.png](Figs/C2F4.png)
+我们在多臂老虎机中，把这几个臂的真值回报期望变成从$N(4,1)$中抽样出来的，然后设置了两个不同的$\alpha$值，分别为0.1和0.4，此外，将动作偏好的更新的公式中的$-\bar{R}_t$尝试去掉，最后的结果是这样：![[C2F4.png]]
 发现如果把这个基准项去掉性能会掉很多，因为如果这样做，如果动作发现这个奖励大于0就会增大偏好，如果发现奖励小于0就减小偏好，这完全不对，我们应该要有一个baseline去说明“什么是好动作，什么是坏动作”。
 #### 再用随机梯度上升算法的视角理解一下这个算法：
 我们想对这个动作偏好做梯度上升算法，也就是我们想最大化期望回报$\mathbb{E}\left[R_{t}\right]$，所以我们这样做：$$H_{t+1}(a)\doteq H_t(a)+\alpha\frac{\partial\mathbb{E}\left[R_t\right]}{\partial H_t(a)}$$然后这个期望回报是这样的：$$\mathbb{E}\left[R_t\right]=\sum_x\pi_t(x)q_*(x)$$其中这个$q_*(x)$真值我们是不知道的，那么我们进行如下推导：$$\begin{aligned}\frac{\partial\mathbb{E}\left[R_t\right]}{\partial H_t\left(a\right)}&=\frac{\partial}{\partial H_t(a)}\left[\sum_x\pi_t(x)q_*(x)\right]\\&=\sum_xq_*(x)\frac{\partial\pi_t(x)}{\partial H_t(a)}\\&=\sum_x\left(q_*(x)-B_t\right)\frac{\partial\pi_t(x)}{\partial H_t(a)}\end{aligned}$$为什么可以减去这个基准项$B_t$，注意这个$B_t$应该与$x$无关，是因为这个$\sum_x\frac{\partial\pi_t(x)}{\partial H_t(a)}$恒为0，可以这样推导：$$\sum_x\frac{\partial\pi_t(x)}{\partial H_t(a)}=\frac{\partial}{\partial H_t(a)}\sum_x\pi_t(x)=\frac{\partial}{\partial H_t(a)}1=0$$同样也可以把这个策略的这个项用$Softmax$拆开，然后我们变形为：$$\frac{\partial\mathbb{E}\left[R_t\right]}{\partial H_t(a)}=\sum_x\pi_t(x)\left(q_*(x)-B_t\right)\frac{\partial\pi_t(x)}{\partial H_t(a)}/\pi_t(x)$$那么这个式子其实是个求期望的式子，因为$\pi_t(x)$是一个$x$的概率分布，前面又是对$x$求和，所以这个是对后面的那一项求期望，所以上面化为：$$=\mathbb{E}\left[\left(q_*(A_t)-B_t\right)\frac{\partial\pi_t(A_t)}{\partial H_t(a)}/\pi_t(A_t)\right]$$那么我们令$B_t=\bar{R}_t$，并将$q_*(A_t)$替换为$R_{t}$，因为其实$\mathbb{E}\left[R_t|A_t\right]=q_*(A_t)$，也就是说这个$R_t$是对期望收益的无偏估计，那么现在前面化为$$=\mathbb{E}\left[(R_t-\bar{R}_t)\frac{\partial\pi_t(A_t)}{\partial H_t(a)}/\pi_t(A_t)\right],$$我们又有$$\frac{\partial\pi_t(x)}{\partial H_t(a)}=\pi_t(x)\left(1_{a=x}-\pi_t(a)\right)$$这个带入$Softmax$公式不难推出
