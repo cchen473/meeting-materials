@@ -60,3 +60,7 @@ $$G_t\doteq\sum_{k=t+1}^T\gamma^{k-t-1}R_k$$这样的话可以考虑无折扣和
 $$\mathbb{E}[X\mid Z=z]=\sum_y\mathbb{E}[X\mid Y=y,Z=z]\cdot P(Y=y\mid Z=z)$$这个公式的意思是，我想推一个东西的条件期望，可以加一个$Y=y$的条件，再乘以一个$P(Y=y\mid Z=z)$，最后求和就可以。
 所以我们很多期望可以这样算。
 为了学会怎么推一些东西，我们做两个练习：
+#### 练习3.12 写出用$q_{\pi}$和$\pi$来表达的$v_{\pi}$公式
+$$v_\pi(s)=\mathbb{E}_\pi[G_t|S_t=s]=\sum_a\pi(a|s)\mathbb{E}_\pi[G_t|S_t=s,A_t=a]=\sum_a\pi(a|s)q_\pi(s,a)$$
+#### 练习3.13 写出用$v_{\pi}$和四参数函数$p$表达的$q_{\pi}$公式
+$$\begin{aligned}q_\pi(s,a)&=\mathbb{E}\left[R_{t+1}+\gamma G_{t+1}\mid S_t=s,A_t=a\right]\\&=\sum_{s^{\prime}}\sum_rp(s^{\prime},r|s,a){\left[r+\gamma\mathbb{E}_\pi[G_{t+1}\mid S_{t+1}=s^{\prime}]\right]}\\&=\sum_{s^{\prime}}\sum_rp(s^{\prime},r|s,a){\left[r+\gamma v_\pi(s^{\prime})\right]}\end{aligned}$$
