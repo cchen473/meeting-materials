@@ -63,4 +63,24 @@ $$\mathbb{E}[X\mid Z=z]=\sum_y\mathbb{E}[X\mid Y=y,Z=z]\cdot P(Y=y\mid Z=z)$$这
 #### 练习3.12 写出用$q_{\pi}$和$\pi$来表达的$v_{\pi}$公式
 $$v_\pi(s)=\mathbb{E}_\pi[G_t|S_t=s]=\sum_a\pi(a|s)\mathbb{E}_\pi[G_t|S_t=s,A_t=a]=\sum_a\pi(a|s)q_\pi(s,a)$$
 #### 练习3.13 写出用$v_{\pi}$和四参数函数$p$表达的$q_{\pi}$公式
-$$\begin{aligned}q_\pi(s,a)&=\mathbb{E}\left[R_{t+1}+\gamma G_{t+1}\mid S_t=s,A_t=a\right]\\&=\sum_{s^{\prime}}\sum_rp(s^{\prime},r|s,a){\left[r+\gamma\mathbb{E}_\pi[G_{t+1}\mid S_{t+1}=s^{\prime}]\right]}\\&=\sum_{s^{\prime}}\sum_rp(s^{\prime},r|s,a){\left[r+\gamma v_\pi(s^{\prime})\right]}\end{aligned}$$
+$$\begin{aligned}q_\pi(s,a)&=\mathbb{E}\left[R_{t+1}+\gamma G_{t+1}\mid S_t=s,A_t=a\right]\\&=\sum_{s^{\prime}}\sum_rp(s^{\prime},r|s,a){\left[r+\gamma\mathbb{E}_\pi[G_{t+1}\mid S_{t+1}=s^{\prime}]\right]}\\&=\sum_{s^{\prime}}\sum_rp(s^{\prime},r|s,a){\left[r+\gamma v_\pi(s^{\prime})\right]}\end{aligned}$$在强化学习和动态规划中，价值函数满足以下的递归关系：$$\begin{aligned}v_{\pi}(s)&\doteq\mathbb{E}_\pi[G_t\mid S_t=s]\\&=\mathbb{E}_\pi[R_{t+1}+\gamma G_{t+1}\mid S_t=s]\\&=\sum_{a}\pi(a|s)\sum_{s^{\prime}}\sum_{r}p(s^{\prime},r|s,a)\left[r+\gamma\mathbb{E}_{\pi}[G_{t+1}|S_{t+1}=s^{\prime}]\right]\\&=\sum_{a}\pi(a|s)\sum_{s^{\prime},r}p(s^{\prime},r|s,a)\left[r+\gamma v_{\pi}(s^{\prime})\right],\text{对于所有}s\in\mathcal{S},\end{aligned}$$那么这个递推式子就是$v_{\pi}的$***贝尔曼方程***，表达了follow策略$\pi$，这一时刻的状态价值和后继的状态价值之间的关系。
+其实贝尔曼方程也有这样写的：$$V(s)=r(s)+\gamma\sum_{s^{\prime}\in S}p(s^{\prime}|s)V(s^{\prime})$$其中$\mathbb{E}[R_t|S_t=s]=r(s)$
+![[C3F3.png]]
+根据这个图其实也可以解释上面的递归式子。
+那么根据上面的式子我们其实可以得到$v_{\pi}(s)$的一个闭式解，大概长这样：$$\mathcal{V}=(I-\gamma\mathcal{P})^{-1}\mathcal{R}$$注意这边的$\mathcal{P}$是$P(s^{\prime}|s)$而不是上面的$p(s^{\prime},r|s,a)$，所以我们还需要用策略函数将action边缘化，同样，这个$\mathcal{R}$其实也是$\mathbb{E}_{\pi}[R_{t+1}\mid S_{t}=s]$，所以我们也需要对action做一个边缘化，最后带入去计算。最后得到状态价值函数的价值函数表，
+#### 一个例子，网格问题
+![[C3F4.png]]
+这个问题每一个小格子都是一个状态，除了A,B之外的所有状态都可以像上下左右进行移动，如果撞墙了就给-1奖励并不转变状态，那么如果可以移动就给0奖励。那么如果走到了A（或B），下一步不管你采取什么动作，下一步的状态都会变成$A^{\prime}$（或$B^{\prime}$），并分别获得+10、+5的奖励。初始时刻我们的策略$\pi$为随机策略。
+可以先分析一下这个问题，我们想要计算$v_{\pi}的$这个值，根据上面的贝尔曼方程，其实是需要求得state transition的条件概率，还有每个state奖励的期望。这几个都很好求得，最后带入就可以求解了。
+像这样：
+![[C3F5.png]]
+每一个格子都代表一个state，那么这里面的数字就代表里面的状态价值函数值，我们以$s_1$为例验证一下我们的算法是否成立：
+我们验证贝尔曼方程的这个形式：$$V(s)=r(s)+\gamma\sum_{s^{\prime}\in S}p(s^{\prime}|s)V(s^{\prime})$$
+我们以左上角状态 $s_1$为例，代入贝尔曼方程右侧手动计算验证，该状态的闭式解价值为$v_\pi(s_1)=3.3$。
+
+该状态为普通网格状态，采用均匀随机策略（四个动作概率均为0.25），折扣因子 ($\gamma=0.9$)。
+
+1. 向北动作：出界后停在原地，即时奖励 ($r=-1$)，下一状态价值仍为 ($v_\pi(s_1)=3.3$) $$ r + \gamma v_\pi(s') = -1 + 0.9\times3.3 = 1.97 $$
+2. 向南动作：走到第1行第0列，即时奖励 ($r=0$)，下一状态价值 ($v_\pi=1.5$) $$ r + \gamma v_\pi(s') = 0 + 0.9\times1.5 = 1.35 $$
+3. 向西动作：出界后停在原地，即时奖励 ($r=-1$)，下一状态价值仍为 ($v_\pi(s_1)=3.3$) $$ r + \gamma v_\pi(s') = -1 + 0.9\times3.3 = 1.97 $$
+4. 向东动作：走到第0行第1列（状态A），即时奖励 (r=0)，下一状态价值 ($v_\pi=8.8$) $$ r + \gamma v_\pi(s') = 0 + 0.9\times8.8 = 7.92 $$贝尔曼方程右侧为策略加权和： $$ \sum_a \pi(a|s_1) \cdot \left[ r + \gamma v_\pi(s') \right] $$代入数值计算：$$\begin{aligned}\text{右边}\\&=0.4925+0.3375+0.4925+1.98\\&=3.3025\\&\approx3.3\end{aligned}$$计算结果与闭式解给出的 ($v_\pi(s_1)=3.3$) 几乎完全一致，微小差异来自价值保留1位小数的四舍五入，验证了该状态满足贝尔曼方程，闭式解正确。
